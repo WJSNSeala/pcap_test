@@ -116,6 +116,7 @@ int main(int argc, char *argv[])
 	/* Grab a packet */
 	printf("=====We will capture 50 packets\n====");
 	printf("====Now Start...====\n");
+	printf("====You should start Web browser====\n");
 
 
 	for(i=1;i<=50;i++)
