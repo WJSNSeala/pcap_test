@@ -82,6 +82,10 @@ int main(int argc, char *argv[])
 	short eth_type = 0;
 	char ip_type = 0;
 
+	char ip_dst[20] = {0, };
+	char ip_src[20] = {0, };
+
+
 	if(argc != 2)
 	{
 		printf("usage  : %s device_name\n", argv[0]);
@@ -134,9 +138,11 @@ int main(int argc, char *argv[])
 			      printf("====It is IP Packet====\n\n");
 
 			      iphdr_pointer = (my_pip)(packet + sizeof(my_eth));
+			      inet_ntop(AF_INET, &iphdr_pointer->ip_dst, ip_dst, sizeof(ip_dst));
+			      inet_ntop(AF_INET, &iphdr_pointer->ip_src, ip_src, sizeof(ip_src));
 
-			      printf("Source IP : %s\n", inet_ntoa(iphdr_pointer->ip_src));
-			      printf("Destination IP : %s\n", inet_ntoa(iphdr_pointer->ip_dst)); //convert struct in_addr to IP address string
+			      printf("Source IP : %s\n", ip_src);
+			      printf("Destination IP : %s\n", ip_dst); //convert struct in_addr to IP address string
 			      printf("Protocol Type : %0x\n\n", iphdr_pointer->ip_p);
 
 			      ip_type = iphdr_pointer->ip_p;
