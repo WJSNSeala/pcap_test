@@ -19,12 +19,11 @@ typedef my_eth*  my_peth;
 
 typedef struct my_ip_header
 {
-	u_char ip_v:4;	//version
-	u_char ip_hl:4;	//header length
+	u_char ip_hl:4, ip_v:4;	//header length
 	u_char ip_tos;	//type of service
-	short ip_len;	//total length
+	u_short ip_len;	//total length
 	u_short ip_id;	//identification
-	short ip_ip_off;	//fragment offset field
+	u_short ip_ip_off;	//fragment offset field
 	u_char ip_ttl;		//time to live
 	u_char ip_p;		//protocol -> next tcp protocol
 	u_short ip_sum;	//checksum
@@ -37,8 +36,9 @@ typedef struct my_tcp_header
 {
 	u_short tcp_sport;
 	u_short tcp_dport;
-	u_char tcp_x2:4;
-	u_char tcp_off:4;
+	uint32_t tcp_seq;
+	uint32_t tcp_ack;
+	u_char tcp_x2:4, tcp_off:4;
 
 	u_char tcp_flags;
 
@@ -152,14 +152,14 @@ int main(int argc, char *argv[])
 				      //TCP Part
 				      printf("=====It is TCP packet Also!====\n\n");
 
-				      tcphdr_pointer = (my_ptcp)(packet+ sizeof(my_ip) + sizeof(my_eth));
+				      tcphdr_pointer = (my_ptcp)(packet+ iphdr_pointer->ip_hl*4 + sizeof(my_eth));
 
 				      printf("Source Port : %d\n", ntohs(tcphdr_pointer->tcp_sport));
 				      printf("Destination Port : %d\n\n", ntohs(tcphdr_pointer->tcp_dport));
 
 				      //Print Extra Data
-				      data_pointer = packet + sizeof(my_eth) + sizeof(my_ip) + sizeof(my_tcp);
-				      data_len = header->caplen - sizeof(my_eth) - sizeof(my_ip) - sizeof(my_tcp);
+				      data_pointer = packet + sizeof(my_eth) + iphdr_pointer->ip_hl*4 + tcphdr_pointer->tcp_off*4;
+				      data_len = iphdr_pointer->ip_len - iphdr_pointer->ip_hl*4 - tcphdr_pointer->tcp_off*4;
 
 				      Print_extra_data(data_pointer, data_len);
 
